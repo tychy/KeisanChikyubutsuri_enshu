@@ -5,6 +5,7 @@
 \newcommand{\kakko}[1][]{(#1)}
 \newcommand{\bx}{\bold{x}}
 \newcommand{\bb}{\bold{b}}
+\newcommand{\bd}{\bold{d}}
 
 
 \date{\today}
@@ -18,12 +19,65 @@
     A = D + L + U
 \end{equation}
 の順番で対角成分、下三角成分、上三角成分を定義する。
+解くべき連立方程式は、
 \begin{align}
   (D + L + U)\bx = \bb  \\
-
+  \bx = -D^{-1}(L + U)\bx +  D^{-1} \bb 
 \end{align}
+ヤコビ法では、以下の漸化式が成立すれば$x^{\kakko[k]}$は連立方程式の解である。
 \begin{equation}
-    \bx^{\kakko[k+1]} = - D^{-1} L \bx^{\kakko[k+1]}\\
-    - D^{-1} L \bx^{\kakko[k]} + D^{-1}\bold{b} 
+    \bx^{\kakko[k+1]} = - D^{-1} L \bx^{\kakko[k]}\\
+    - D^{-1} U \bx^{\kakko[k]} + D^{-1}\bold{b} 
+\end{equation}
+Gauss-Seidel法では、以下の漸化式が成立すれば$x^{\kakko[k]}$は連立方程式の解である。
+\begin{align}
+    \bx^{\kakko[k+1]} &= - D^{-1} L \bx^{\kakko[k+1]}
+    - D^{-1} U \bx^{\kakko[k]} + D^{-1}\bold{b}\\
+    &=- D^{-1} (L + U) \bx^{\kakko[k]} + D^{-1}\bold{b} 
+\end{align}
+反復の計算は、
+\begin{align*}
+    (E + D^{-1}L)\bx^{\kakko[k+1]} = - D^{-1} U \bx^{\kakko[k]} + D^{-1}\bold{b}\\
+    (D + L)D^{-1}\bx^{\kakko[k+1]} = - D^{-1} U \bx^{\kakko[k]} + D^{-1}\bold{b}\\
+    \bx^{\kakko[k+1]} = - (D + L)^{-1}U \bx^{\kakko[k]} +(D + L)^{-1}\bold{b}\\
+\end{align*}
+ここで、$\bd^{\kakko[k+1]} = \bx^{\kakko[k+1]} - \bx^{\kakko[k]}$を定義する。
+\begin{align*}
+  \bd^{\kakko[k+1]} &= - \left[ (D + L)^{-1}U + E\right] \bx^{\kakko[k]} + (D + L)^{-1}\bb\\
+  &= - \left[ (D + L)^{-1}U - D^{-1}U + D^{-1}U+ E\right] \bx^{\kakko[k]}\\
+  &+ \left[(D + L)^{-1} - D^{-1} + D^{-1}\right]\bb\\
+  &= - \left[ - L(D + L)^{-1}D^{-1}U + D^{-1}U+ E\right] \bx^{\kakko[k]}\\
+  &+ \left[- L(D + L)^{-1}D^{-1}+ D^{-1}\right]\bb\\
+  &= - D^{-1}L \bx^{\kakko[k+1]}- \left( D^{-1}U+ E\right) \bx^{\kakko[k]} + D^{-1}\bb
+\end{align*}
+更に変形する。
+\begin{align*}
+  (E + D^{-1}L)\bd^{\kakko[k+1]} \\ 
+& = - D^{-1}L (- D^{-1} U \bx^{\kakko[k]} + D^{-1}\bold{b})\\
+&- \left( D^{-1}U+ E\right) (- D^{-1} U \bx^{\kakko[k-1]} + D^{-1}\bold{b})\\
+&+ (D^{-1} + D^{-1} L D^{-1}) \bb\\
+&=  - D^{-1}L D^{-1} U \bx^{\kakko[k]} - D^{-1}L D^{-1}\bold{b}\\
+&+ \left( D^{-1}UD^{-1} U+ D^{-1} U\right)  \bx^{\kakko[k-1]} \\
+&-( D^{-1}UD^{-1} + D^{-1})\bold{b}\\
+&+ (D^{-1} + D^{-1} L D^{-1})\bb
+\end{align*}
+両辺変形して、
+\begin{align*}
+D^{-1}(D + L)\bd^{\kakko[k+1]} &= D^{-1} [-L D^{-1} U \bx^{\kakko[k]} - L D^{-1}\bold{b}\\
+&+ \left( UD^{-1} U+ U\right)  \bx^{\kakko[k-1]} \\
+&+(-UD^{-1} + LD^{-1})\bold{b}]\\
+(D + L)\bd^{\kakko[k+1]}&= - L D^{-1} U \bx^{\kakko[k]} - L D^{-1}\bold{b}\\
+&+ \left( UD^{-1} U+ U\right)  \bx^{\kakko[k-1]} \\
+& + (-UD^{-1} + LD^{-1})\bold{b}\\
+\end{align*}
+左辺の係数の逆行列を両辺にかけて、
+\begin{align*}
+\bd^{\kakko[k+1]} &= (D + L)^{-1}U[- L D^{-1}  \bx^{\kakko[k]} + \left( D^{-1} U+ E\right) \bx^{\kakko[k-1]}
+-D^{-1}\bold{b}]\\
+&= (D + L)^{-1}U\bd^{\kakko[k]}\\
+\end{align*}
+よってGauss-Seidel法において解が収束する条件は、
+\begin{equation}
+    ||(D + L)^{-1}U||_2 < 1
 \end{equation}
 \end{document}

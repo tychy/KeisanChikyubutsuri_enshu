@@ -35,7 +35,7 @@ class TestGaussJordanElimination(unittest.TestCase):
             ],
         )
         b = np.array([15.0, 15.0, 25.0, 15.0])
-        x = execute(np.copy(A), np.copy(b))
+        x, L, U = execute(np.copy(A), np.copy(b))
         print(A)
         print(x)
         print(A @ x.T)

@@ -1,0 +1,29 @@
+\documentclass[twocolumn]{jsarticle}
+\usepackage{amssymb,amsmath,amsthm}
+\usepackage{newtxtt}
+\usepackage[utf8]{inputenc}
+\newcommand{\kakko}[1][]{(#1)}
+\newcommand{\bx}{\bold{x}}
+\newcommand{\bb}{\bold{b}}
+
+
+\date{\today}
+\author{山田龍}
+\title{}
+\begin{document}
+\maketitle
+\section{Gaussの消去法}
+\section{Gauss-Seidel法}
+\begin{equation}
+    A = D + L + U
+\end{equation}
+の順番で対角成分、下三角成分、上三角成分を定義する。
+\begin{align}
+  (D + L + U)\bx = \bb  \\
+
+\end{align}
+\begin{equation}
+    \bx^{\kakko[k+1]} = - D^{-1} L \bx^{\kakko[k+1]}\\
+    - D^{-1} L \bx^{\kakko[k]} + D^{-1}\bold{b} 
+\end{equation}
+\end{document}

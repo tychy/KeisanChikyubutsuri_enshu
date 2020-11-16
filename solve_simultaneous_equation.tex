@@ -80,4 +80,21 @@ D^{-1}(D + L)\bd^{\kakko[k+1]} &= D^{-1} [-L D^{-1} U \bx^{\kakko[k]} - L D^{-1}
 \begin{equation}
     ||(D + L)^{-1}U||_2 < 1
 \end{equation}
-\end{document}
+反復すべき式は、
+\begin{align}
+    D\bx^{\kakko[k+1]} = - L\bx^{\kakko[k+1]} - U\bx^{\kakko[k]}+\bb\\
+    a_{ii}\bx^{\kakko[k+1]}_i =
+    - \sum^{i-1}_{j=1} a_{ij}\bx^{\kakko[k+1]}_j- \sum^{n}_{j=i+1}a_{ij}\bx^{\kakko[k+1]}_j+\bb_i
+\end{align}
+\section{SOR法}
+Gauss-Seidel法において、緩和係数$\omega$を持ち込んで改良した解法をSOR法という。
+Gauss-Seidel法の計算式を変形する。
+\begin{align}
+&    (E + D^{-1}L)\bx^{\kakko[k+1]} = - D^{-1} U \bx^{\kakko[k]} + D^{-1}\bold{b}\\
+&    \bx^{\kakko[k+1]} = \bx^{\kakko[k]}-D^{-1}L\bx^{\kakko[k+1]}- (D^{-1} U+E) \bx^{\kakko[k]} + D^{-1}\bold{b}
+\end{align}
+SOR法では緩和係数$\omega$を導入する。
+\begin{align*}
+  \bx^{\kakko[k+1]} =\bx^{\kakko[k]} +\omega\left[-D^{-1}L\bx^{\kakko[k+1]}- (D^{-1} U+E) \bx^{\kakko[k]} + D^{-1}\boldb} \right]
+\end{align*}
+\end{document

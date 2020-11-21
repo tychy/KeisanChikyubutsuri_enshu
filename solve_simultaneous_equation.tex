@@ -94,7 +94,18 @@ Gauss-Seidel法の計算式を変形する。
 &    \bx^{\kakko[k+1]} = \bx^{\kakko[k]}-D^{-1}L\bx^{\kakko[k+1]}- (D^{-1} U+E) \bx^{\kakko[k]} + D^{-1}\bold{b}
 \end{align}
 SOR法では緩和係数$\omega$を導入する。
-\begin{align*}
-  \bx^{\kakko[k+1]} =\bx^{\kakko[k]} +\omega\left[-D^{-1}L\bx^{\kakko[k+1]}- (D^{-1} U+E) \bx^{\kakko[k]} + D^{-1}\boldb} \right]
-\end{align*}
-\end{document
+\begin{align}
+  \bx^{\kakko[k+1]} = \bx^{\kakko[k]} +\omega\left[-D^{-1}L\bx^{\kakko[k+1]}- (D^{-1} U+E) \bx^{\kakko[k]} + D^{-1}\bb \right]\\
+  (E + \omega D^{-1}L)\bx^{\kakko[k+1]} = \left[E-\omega(D^{-1} U+E)\right] \bx^{\kakko[k]} + \omega D^{-1}\bb 
+\end{align}
+反復すべき式は、
+\begin{align}
+  D\bx^{\kakko[k+1]} = D\bx^{\kakko[k]} +\omega\left[-L\bx^{\kakko[k+1]}- (U+D) \bx^{\kakko[k]} + \bb \right]\\
+  D\bx^{\kakko[k+1]} = - \omega L\bx^{\kakko[k+1]} +\left[D- \omega (U+D)\right] \bx^{\kakko[k]} + \omega\bb 
+\end{align}
+成分表示すれば、
+\begin{equation}
+a_{ii}\bx^{\kakko[k+1]}_i = - \omega\sum^{i-1}_{j=1} a_{ij}\bx^{\kakko[k+1]}_j + (1- \omega) a_{ii}\bx^{\kakko[k]}_i -\omega\sum^{n}_{j=i+1}a_{ij}\bx^{\kakko[k]}_j+\omega\bb_i
+\end{equation}
+緩和係数は問題に応じて選択される。
+\end{document}

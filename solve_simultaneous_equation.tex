@@ -185,9 +185,54 @@ a_{ii}\bx^{\kakko[k+1]}_i = - \omega\sum^{i-1}_{j=1} a_{ij}\bx^{\kakko[k+1]}_j +
   \end{array}
   \right)
 \end{equation}
-
 の解をGaussの消去法を用いて求める。
 \subsection{単精度と倍精度}
+計算機において実数を表示するためには浮動小数点法が使われる。
+計算機の内部において$2$進数が使われていたとき、
+その表現は、以下のよう記述できる。
+\begin{equation}
+  \pm (1.a_1 a_2 \cdots a_m) \times 2^e
+\end{equation}
+では、単精度の場合に指数部が$8$ビットであったとしよう。
+いま、$10$進数で$12.5$の数値を浮動小数点表示したいとする。
+まず符号は$+$なので符号の部分のビットは$0$である。
+$12.5$は$2$進数表示で$1.1001 \times 2^3$と表される。
+指数部分はバイアス$128-1=127$を使った記法を用いれば、$(3 + 127)_{10} =(130)_{10} = (10000010)_2$となる。
+仮数部は、正規化された$2$進数表示の場合には必ず先頭は$1$になるので、先頭を省略して
+$10010\cdots0$となる。図示すれば以下のようになる。
+
+
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|}\hline
+1&2&3&4&5&6&7&8&9&10&11&12&13&14&15&$\cdots$&32\\\hline
+符号 & 指数部&-&-&-&-&-&-&-&仮数部&-&-&-&-&-&$\cdots$&-\\\hline
+0&1&0&0&0&0&0&1&0&1&0&0&1&0&0&$\cdots$&0\\\hline
+\end{tabular}
+
+
+
+numpyのfloat32、float64においては、numpy.finfo関数を使ってそれぞれの使用を確認することができる。
+
+\begin{lstlisting}
+  Machine parameters for float32
+precision =   6   resolution = 1.0000000e-06
+machep =    -23   eps =        1.1920929e-07
+negep =     -24   epsneg =     5.9604645e-08
+minexp =   -126   tiny =       1.1754944e-38
+maxexp =    128   max =        3.4028235e+38
+nexp =        8   min =        -max
+\end{lstlisting}
+\begin{lstlisting}
+  Machine parameters for float64
+precision =  15   resolution = 1.0000000000000001e-15
+machep =    -52   eps =        2.2204460492503131e-16
+negep =     -53   epsneg =     1.1102230246251565e-16
+minexp =  -1022   tiny =       2.2250738585072014e-308
+maxexp =   1024   max =        1.7976931348623157e+308
+nexp =       11   min =        -max
+\end{lstlisting}
+
+ここから、単精度では指数部が$8bit$で仮数部が$32-1-8=23bit$あるので$10$進数では6桁の精度、
+倍精度では指数部が$11bit$で仮数部が$64-1-11=52bit$あるので$10$進数では15桁の精度があることがわかる。
 \subsection{計算精度}
 \section{課題2}
 \begin{equation}

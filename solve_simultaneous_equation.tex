@@ -34,7 +34,6 @@
 \title{}
 \begin{document}
 \maketitle
-\section{Gaussの消去法}
 \section{Gauss-Seidel法}
 Gauss-Seidel法とSOR法の導出については\cite{suuchi}の導出を参考にした。
 \begin{equation}
@@ -210,7 +209,7 @@ $10010\cdots0$となる。図示すれば以下のようになる。
 
 
 
-numpyのfloat32、float64においては、numpy.finfo関数を使ってそれぞれの使用を確認することができる。
+numpyのfloat32、float64においては、numpy.finfo関数を使ってそれぞれの仕様を確認することができる。
 
 \begin{lstlisting}
   Machine parameters for float32
@@ -233,7 +232,33 @@ nexp =       11   min =        -max
 
 ここから、単精度では指数部が$8bit$で仮数部が$32-1-8=23bit$あるので$10$進数では6桁の精度、
 倍精度では指数部が$11bit$で仮数部が$64-1-11=52bit$あるので$10$進数では15桁の精度があることがわかる。
-\subsection{計算精度}
+\subsection{$b=(15, 15, 26, 15)^T$の場合}
+Gaussの消去法を使って$A\bx = \bb$の解$\bx$を求めた。
+単精度では、
+\begin{lstlisting}
+  x: [1.        1.0000001 0.9999999 1.       ]
+  A * x: [14.99999964 15.0000006  25.9999994  14.99999905]
+\end{lstlisting}
+倍精度では、
+\begin{lstlisting}
+  x: [1. 1. 1. 1.]
+  A * x: [15. 15. 26. 15.]
+\end{lstlisting}
+比較すると、単精度の場合には$7$桁目以降で誤差が生じている。
+
+\subsection{$b=(16, 16, 25, 16)^T$の場合}
+Gaussの消去法を使って$A\bx = \bb$の解$\bx$を求めた。
+単精度では、
+\begin{lstlisting}
+  x: [  832.18555  1324.2953  -2407.5376   2021.451  ]
+  A * x: [16.00036621 15.99938965 25.         16.00097656]
+\end{lstlisting}
+倍精度では、
+\begin{lstlisting}
+  x: [  832.  1324. -2407.  2021.]
+  A * x: [16. 16. 25. 16.]
+\end{lstlisting}
+比較すると、$4$桁目以降に誤差が生じている。これは、
 \section{課題2}
 \begin{equation}
   \left(
@@ -269,7 +294,7 @@ nexp =       11   min =        -max
 ソースコードを添付しますが、全て
 \href{https://github.com/tychy/NumericalAnalysisPlayground}{https://github.com/tychy/NumericalAnalysisPlayground}にあります。
 各関数のテストもついています。
-\begin{lstlisting}[caption=スクリプトファイル名,label=参照ラベル]
+\begin{lstlisting}[caption=gaussの消去法,label=参照ラベル]
 import numpy as np
 
 
@@ -338,6 +363,8 @@ def single(A, b):
     print("-----single-----")
     A_copy = np.copy(A).astype(np.float32)
     b_copy = np.copy(b).astype(np.float32)
+    fi32 = np.finfo(np.float32)
+    print(fi32)
     x, L, U = execute(A_copy, b_copy)
     print("A * x:", A @ x.T)
     print("-----END-----")
@@ -348,6 +375,8 @@ def double(A, b):
 
     A_copy = np.copy(A).astype(np.float64)
     b_copy = np.copy(b).astype(np.float64)
+    fi64 = np.finfo(np.float64)
+    print(fi64)
     x, L, U = execute(A_copy, b_copy)
     print("A * x:", A @ x.T)
     print("-----END-----")

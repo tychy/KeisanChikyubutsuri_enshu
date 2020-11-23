@@ -66,6 +66,8 @@ def single(A, b):
     print("-----single-----")
     A_copy = np.copy(A).astype(np.float32)
     b_copy = np.copy(b).astype(np.float32)
+    fi32 = np.finfo(np.float32)
+    print(fi32)
     x, L, U = execute(A_copy, b_copy)
     print("A * x:", A @ x.T)
     print("-----END-----")
@@ -76,6 +78,8 @@ def double(A, b):
 
     A_copy = np.copy(A).astype(np.float64)
     b_copy = np.copy(b).astype(np.float64)
+    fi64 = np.finfo(np.float64)
+    print(fi64)
     x, L, U = execute(A_copy, b_copy)
     print("A * x:", A @ x.T)
     print("-----END-----")

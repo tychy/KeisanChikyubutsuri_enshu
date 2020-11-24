@@ -1,5 +1,6 @@
 \documentclass{jsarticle}
 \usepackage[dvipdfmx]{hyperref}
+\usepackage[dvipdfmx]{graphicx}
 \usepackage{amssymb,amsmath,amsthm}
 \usepackage{listings,jlisting}
 \usepackage{newtxtt}
@@ -35,7 +36,8 @@
 \begin{document}
 \maketitle
 \section{Gauss-Seidel法}
-Gauss-Seidel法とSOR法の導出については\cite{suuchi}の導出を参考にした。
+SOR法の導出を知りたかったので、ここに示した。
+Gauss-Seidel法とSOR法の導出については\cite{suuchi}の導出を参考にしながら行間をできる限り埋めた。
 \begin{equation}
     A = D + L + U
 \end{equation}
@@ -258,7 +260,7 @@ Gaussの消去法を使って$A\bx = \bb$の解$\bx$を求めた。
   x: [  832.  1324. -2407.  2021.]
   A * x: [16. 16. 25. 16.]
 \end{lstlisting}
-比較すると、$4$桁目以降に誤差が生じている。これは、
+比較すると、$4$桁目以降に誤差が生じており、単精度の範囲での演算では誤差が大きくなっている。
 \section{課題2}
 \begin{equation}
   \left(
@@ -290,6 +292,31 @@ Gaussの消去法を使って$A\bx = \bb$の解$\bx$を求めた。
 の解をSOR法を用いて求める。
 
 \subsection{解と反復係数}
+解を計算によって求めた。
+\begin{lstlisting}
+  x: [ 0.72727273 -0.27272727 -0.18181818 -0.09090909]
+\end{lstlisting}
+横軸を反復回数、縦軸を真の解からの誤差のノルムの対数にとる。また、計算は$10$桁よりも発散が大きくなったら打ち切る。
+この条件のもとで、$\omega$の値を変えてプロットすると以下のようになる。
+\begin{figure}[htbp]
+    \includegraphics[clip,width=15.0cm]{./sor.png}
+    \caption{SOR法の誤差}
+\end{figure}
+$w<=1$では収束、$w>1$では発散している。
+プログラムのミスによるものかを確認するために、例えば、課題$1$で指定されたような連立方程式に対してSOR法を用いると、以下のようになる。
+\begin{figure}[htbp]
+    \includegraphics[clip,width=15.0cm]{./sor_debug.png}
+    \caption{SOR法の誤差}
+\end{figure}
+
+
+すべての$0<\omega<2$の緩和係数に対して収束している。
+また、$\omega = 1.9$のときだけ精度が他の緩和係数のときよりも高いこともわかった。
+
+プログラムは正しく走っていると考えられるので、最初の場合に$\omega$が$1$よりも少し高いところから先で発散している理由を考えた。
+私は、行列の固有値が$3,	2.2469796037175,	-0.80193773580484,	0.55495813208737$で絶対値が$1$より大きいものがあることから、
+本当はGauss-Seidel法が使えない状況であるために$w$が$1$より小さい場合にのみ収束したと考えた。
+
 \section{プログラム}
 ソースコードを添付しますが、全て
 \href{https://github.com/tychy/NumericalAnalysisPlayground}{https://github.com/tychy/NumericalAnalysisPlayground}にあります。
@@ -400,7 +427,130 @@ if __name__ == "__main__":
     double(A, c)
 
 \end{lstlisting}
-\begin{lstlisting}[caption=スクリプトファイル名,label=参照ラベル]
+\begin{lstlisting}[caption=SOR法,label=参照ラベル]
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+
+def split_matrix(A):
+    D = np.zeros_like(A)
+    L = np.zeros_like(A)
+    U = np.zeros_like(A)
+    for i in range(A.shape[0]):
+        D[i, i] = A[i, i]
+
+    for i in range(A.shape[0]):
+        for j in range(i):
+            L[i, j] = A[i, j]
+
+    for i in range(A.shape[0]):
+        for j in range(i + 1, A.shape[0]):
+            U[i, j] = A[i, j]
+    print("D:", D)
+    print("L:", L)
+    print("U:", U)
+    return D, L, U
+
+
+def execute(A, b, w, x_true):
+    assert A.shape[0] == A.shape[1], "A must be n * n"
+    assert A.shape[0] == b.shape[0], "size of A and b must match"
+    print("A:", A)
+    print("b:", b)
+    # D, L, U = split_matrix(A)
+    x_prev = np.zeros_like(b)
+    x = np.zeros_like(b)
+    step_ls = []
+    x_ls = []
+    step = 0
+    max_step = 300
+    while step <= max_step:
+        if np.linalg.norm(x - x_true) > np.power(10, 10):
+            break
+        if step % 10 == 0:
+            step_ls.append(step)
+            x_ls.append(np.log(np.linalg.norm(x - x_true)))
+        x_prev = np.copy(x)
+        for i in range(A.shape[0]):
+            mida = 0
+            midb = 0
+            for j in range(i):
+                mida += A[i, j] * x[j]
+            for j in range(i + 1, A.shape[0]):
+                midb += A[i, j] * x_prev[j]
+            x[i] = (
+                -w * mida + (1 - w) * A[i, i] * x_prev[i] - w * midb + w * b[i]
+            ) / A[i, i]
+        step += 1
+    print("x:", x)
+    return x, step_ls, x_ls
+
+
+def double(A, b, w, x_true):
+    print("-----double-----")
+    print("omega:", w)
+    A_copy = np.copy(A).astype(np.float64)
+    b_copy = np.copy(b).astype(np.float64)
+    x, step_ls, x_ls = execute(A_copy, b_copy, w, x_true)
+    print("A * x:", A @ x.T)
+    print("-----END-----")
+    return step_ls, x_ls
+
+
+def plot_sor():
+    sns.set_theme()
+    A = np.array(
+        [
+            [1.0, -1.0, 0.0, 0.0],
+            [-1.0, -2.0, -1.0, 0.0],
+            [0.0, -1.0, 2.0, -1.0],
+            [0.0, 0.0, -1.0, 2.0],
+        ],
+    )
+    b = np.array([1.0, 0.0, 0.0, 0.0])
+    x_true = np.array(
+        [0.72727272727273, -0.27272727272727, -0.18181818181818, -0.090909090909091]
+    )
+    fig = plt.figure(figsize=(10, 10))
+    for w in [0.1, 0.3, 0.5, 0.7, 0.9, 0.99, 1.0, 1.01, 1.1, 1.3, 1.5, 1.7, 1.9, 3, 5]:
+        step_ls, x_ls = double(A, b, w, x_true)
+        plt.plot(step_ls, x_ls, label="w:{:.2f}".format(w))
+
+    plt.xlabel("step")
+    plt.ylabel("ln|x-x_t|")
+    plt.legend()
+    plt.savefig("sor.png")
+
+
+def plot_sor_debug():
+    sns.set_theme()
+    A = np.array(
+        [
+            [10.0, 1.0, 4.0, 0.0],
+            [1.0, 10.0, 5.0, -1.0],
+            [4.0, 5.0, 10.0, 7.0],
+            [0.0, -1.0, 7.0, 9.0],
+        ],
+    )
+    b = np.array([15.0, 15.0, 26.0, 15.0])
+
+    x_true = np.array([1, 1, 1, 1])
+    fig = plt.figure(figsize=(10, 10))
+
+    for w in [0.1, 0.7, 1.0, 1.1, 1.5, 1.7, 1.8, 1.9]:
+        step_ls, x_ls = double(A, b, w, x_true)
+        plt.plot(step_ls, x_ls, label="w:{:.1f}".format(w))
+
+    plt.xlabel("step")
+    plt.ylabel("ln|x-x_t|")
+    plt.legend()
+    plt.savefig("sor_debug.png")
+
+
+if __name__ == "__main__":
+    plot_sor()
+    plot_sor_debug()
 \end{lstlisting}
 \bibliographystyle{junsrt}
 \bibliography{cite}

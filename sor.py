@@ -21,7 +21,7 @@ def split_matrix(A):
     return D, L, U
 
 
-def execute(A, b):
+def execute(A, b, w):
     assert A.shape[0] == A.shape[1], "A must be n * n"
     assert A.shape[0] == b.shape[0], "size of A and b must match"
     print("A:", A)
@@ -29,7 +29,6 @@ def execute(A, b):
     # D, L, U = split_matrix(A)
     x_prev = np.zeros_like(b)
     x = np.zeros_like(b)
-    w = 0.7
     while True:
         x_prev = np.copy(x)
         for i in range(A.shape[0]):
@@ -47,20 +46,12 @@ def execute(A, b):
     return x
 
 
-def single(A, b):
-    print("-----single-----")
-    A_copy = np.copy(A).astype(np.float32)
-    b_copy = np.copy(b).astype(np.float32)
-    x = execute(A_copy, b_copy)
-    print("A * x:", A @ x.T)
-    print("-----END-----")
-
-
-def double(A, b):
-    print("-----single-----")
+def double(A, b, w):
+    print("-----double-----")
+    print("omega:", w)
     A_copy = np.copy(A).astype(np.float64)
     b_copy = np.copy(b).astype(np.float64)
-    x = execute(A_copy, b_copy)
+    x = execute(A_copy, b_copy, w)
     print("A * x:", A @ x.T)
     print("-----END-----")
 
@@ -75,4 +66,5 @@ if __name__ == "__main__":
         ],
     )
     b = np.array([1.0, 0.0, 0.0, 0.0])
-    double(A, b)
+    w = 0.7
+    double(A, b, w)

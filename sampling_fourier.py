@@ -18,7 +18,6 @@ def power_spectral(t, n, f_n):
         curf = curf * t / n
         f_k.append(curf)
     f_k = np.array(f_k)
-    print(f_k)
     f_k = f_k.real ** 2 + f_k.imag ** 2
     return f_k / t
 

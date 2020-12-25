@@ -4,4 +4,7 @@
 *.fdb_latexmk
 *.fls
 *.log
+*.blg
+*.bbl
+*.out
 __latexindent_temp.tex

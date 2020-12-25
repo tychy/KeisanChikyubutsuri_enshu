@@ -11,7 +11,6 @@ def gen_data(theta):
 def power_spectral(t, n, f_n):
     f_k = []
     for idx in range(n):
-        print("idx", idx)
         curf = 0
         for i in range(n):
             curf += f_n[i] * np.exp(-1.0j * 2 * np.pi * idx * i / n)
@@ -22,15 +21,20 @@ def power_spectral(t, n, f_n):
     return f_k / t
 
 
-def plot_spectral(t, n):
+def plot_spectral(t_ls, n_ls):
     sns.set_theme()
-    theta = np.linspace(0, 2 * t, n + 1)
-    data = gen_data(theta)
-    power = power_spectral(t, n, data)
-    omega = [2 * np.pi * k / t for k in range(n)]
-    plt.plot(omega, power)
+    figure = plt.figure()
+    for t, n in zip(t_ls, n_ls):
+        theta = np.linspace(0, t, n)
+        data = gen_data(theta)
+        power = power_spectral(t, n, data)
+        omega = [2 * np.pi * k / t for k in range(n)]
+        plt.plot(omega, power, label="N={},T={}".format(n, t))
+    plt.xlabel("omega")
+    plt.ylabel("|F_k|^2/T")
+    plt.legend()
     plt.savefig("power.png")
 
 
 if __name__ == "__main__":
-    plot_spectral(100, 100)
+    plot_spectral([100, 300], [100, 300])

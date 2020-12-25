@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 from tqdm import tqdm
+import time
 
 
 def gen_data(n, case):
@@ -53,12 +54,16 @@ def test_dft(n, case):
         print("fourier:", f_ls)
     else:
         sns.set_theme()
-
+        time_ls = []
         error_ls = []
         step_ls = []
+
         for idx in tqdm(range(1, n)):
             arr = gen_data(idx, case)
+            ut = time.time()
             coef_ls = coef(arr)
+            t = time.time() - ut
+
             f_ls = dft(coef_ls)
 
             c_true = np.zeros_like(coef_ls)
@@ -67,6 +72,8 @@ def test_dft(n, case):
             diff = coef_ls - c_true
             error_ls.append(np.mean(np.sqrt(diff.real ** 2 + diff.imag ** 2)))
             step_ls.append(idx)
+            time_ls.append(t)
+
         # draw
         step_ls = np.array(step_ls)
         error_ls = np.array(error_ls)
@@ -83,6 +90,21 @@ def test_dft(n, case):
         figure.tight_layout()
         figure.savefig("dft_error.png")
 
+        # draw
+        time_ls = np.array(time_ls)
+        figure = plt.figure()
+        ax1 = figure.add_subplot(1, 2, 1)
+        ax1.set_xlabel("N")
+        ax1.set_ylabel("time")
+        ax1.plot(step_ls, time_ls)
+
+        ax2 = figure.add_subplot(1, 2, 2)
+        ax2.plot(np.log(step_ls), np.log(time_ls))
+        ax2.set_xlabel("log(N)")
+        ax2.set_ylabel("log(time)")
+        figure.tight_layout()
+        figure.savefig("dft_time.png")
+
 
 if __name__ == "__main__":
-    test_dft(100, 2)
+    test_dft(500, 2)

@@ -51,6 +51,9 @@ def plot_fourier(case=1, kmax=100):
         if k in [1, 5, 10]:
             plt.plot(theta, np.real(z), label="N={}".format(k))
 
+    if case == 2:
+        plt.plot([0, 2 * np.pi],[1.18, 1.18], "red", linestyle='dashed',label="1.18") # normal way
+
     plt.plot(theta, np.real(z), label="N={}".format(kmax))
     plt.xlim(0.0, 2 * np.pi)  # 横軸の表示範囲の指定
     plt.ylim(-2.0, 2.0)  # 縦軸の表示範囲の指定

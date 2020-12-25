@@ -150,7 +150,18 @@ $t = O(N^2)$であることが傾きからわかる。
     f(t) = \sin(t) + \sin(\sqrt{2}t)
 \end{equation}
 からデータ列を作成して、離散フーリエ変換を実行したあとパワースペクトルを計算する。
-
+結果は図\ref{f7}のようになる。
+サンプリング数を増やすとピークが鋭くなり、裾が小さくなる。
+\begin{figure}[htbp]
+    \includegraphics[clip,width=10.0cm]{./power.png}
+    \caption{Power Spectral}
+    \label{f7}
+\end{figure}
+\section{プログラム}
+ソースコードを添付しますが、全て
+\href{https://github.com/tychy/NumericalAnalysisPlayground}{https://github.com/tychy/NumericalAnalysisPlayground}にあります。
+\begin{lstlisting}[caption=gaussの消去法,label=参照ラベル]
+\end{lstlisting}
 \bibliographystyle{junsrt}
 \bibliography{cite}
 \end{document}

@@ -9,18 +9,14 @@ def f(x, t):
     return res
 
 
-def runge_kutta_one(dh, t_end):
-    t = 1
-    x = 0
+def runge_kutta_one(x, dh, t, t_end):
     while t < t_end:
         x = x + dh * f(x, t)
         t += dh
     return x
 
 
-def runge_kutta_two(dh, t_end):
-    t = 1
-    x = 0
+def runge_kutta_two(x, dh, t, t_end):
     while t < t_end:
         k_one = dh * f(x, t)
         # Heun法を採用
@@ -30,9 +26,7 @@ def runge_kutta_two(dh, t_end):
     return x
 
 
-def runge_kutta_four(dh, t_end):
-    t = 1
-    x = 0
+def runge_kutta_four(x, dh, t, t_end):
     while t < t_end:
         k_one = dh * f(x, t)
         k_two = dh * f(x + k_one / 2, t + dh / 2)
@@ -43,9 +37,7 @@ def runge_kutta_four(dh, t_end):
     return x
 
 
-def runge_kutta_four_efficient(dh, t_end):
-    t = 1
-    x = 0
+def runge_kutta_four_efficient(x, dh, t, t_end):
     while t < t_end:
         x_cur = x
         k = dh * f(x, t)
@@ -61,8 +53,8 @@ def runge_kutta_four_efficient(dh, t_end):
 
 
 def plot_runge_kutta():
-
     sns.set_theme()
+    x, t = 0, 1
     tend = 11
     one_ls = []
     two_ls = []
@@ -84,9 +76,9 @@ def plot_runge_kutta():
         1,
     ]
     for dh in dh_ls:
-        one_ls.append(np.fabs(ans - runge_kutta_one(dh, tend)))
-        two_ls.append(np.fabs(ans - runge_kutta_two(dh, tend)))
-        four_ls.append(np.fabs(ans - runge_kutta_four_efficient(dh, tend)))
+        one_ls.append(np.fabs(ans - runge_kutta_one(x, dh, t, tend)))
+        two_ls.append(np.fabs(ans - runge_kutta_two(x, dh, t, tend)))
+        four_ls.append(np.fabs(ans - runge_kutta_four_efficient(x, dh, t, tend)))
     log_dh = np.log10(dh_ls)
     plt.plot(log_dh, np.log10(one_ls), label="RK1")
     plt.plot(log_dh, np.log10(two_ls), label="RK2")

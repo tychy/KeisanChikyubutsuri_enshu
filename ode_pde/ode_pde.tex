@@ -1,0 +1,25 @@
+\documentclass{jsarticle}
+\usepackage[dvipdfmx]{hyperref}
+\usepackage[dvipdfmx]{graphicx}
+\usepackage{amssymb,amsmath,amsthm}
+\usepackage{listings,jlisting}
+\usepackage{newtxtt}
+\usepackage{cases}
+\usepackage[utf8]{inputenc}
+
+\date{\today}
+\author{山田龍}
+\title{}
+\begin{document}
+\maketitle
+\section{ode}
+\section{pde}
+\subsection{課題1}
+二階微分は５点差分公式を使うと
+\begin{equation}
+    f''(x_i) = \frac{-f_{i-2}+16f_{i-1}-30f_{i}+16f_{i+1}-f_{i+2}}{12h^2} + O(h^4)
+\end{equation}
+
+\bibliographystyle{junsrt}
+\bibliography{cite}
+\end{document}

@@ -6,13 +6,139 @@
 \usepackage{newtxtt}
 \usepackage{cases}
 \usepackage[utf8]{inputenc}
-
+\lstset{
+  language=Python,      
+  basicstyle={\small},%
+  identifierstyle={\small},%
+  commentstyle={\small\itshape},%
+  keywordstyle={\small\bfseries},%
+  ndkeywordstyle={\small},%
+  stringstyle={\small\ttfamily},
+  frame={tblr},
+  breaklines=true,
+  columns=[l]{fullflexible},%
+% numbers=left,%
+  xrightmargin=0zw,%
+  xleftmargin=3zw,%
+  numberstyle={\scriptsize},%
+  stepnumber=1,
+  numbersep=1zw,%
+  lineskip=-0.5ex%
+}
 \date{\today}
 \author{山田龍}
 \title{}
 \begin{document}
 \maketitle
 \section{ode}
+\subsection{課題1}
+\begin{equation}
+    \frac{x}{t} = \frac{x + \sqrt{x^2 + t^2}}{t}
+\end{equation}\label{eq:1}
+\eqref{eq:1}の形の常微分方程式を解くことを考える。
+$t_0=1,x_0 = 0$を初期条件としてルンゲクッタ公式を用いて$t=1$まで計算する。
+
+\begin{figure}[htbp]
+    \includegraphics[clip,width=15.0cm]{./runge_kutta_error.png}
+    \caption{RungeKutta法の誤差}
+    \label{fig:1}
+\end{figure}
+1次、2次、４次のルンゲクッタ法を用いて時間刻み幅$h$を変化させた結果が図\ref{fig:1}のようになる。
+横軸が刻み幅の対数、縦軸が$t=1$での真値からのズレ$|60 - x|$の対数である。対数の基底は$10$にとった。
+どの刻み幅においても、次数の高いルンゲクッタ法が誤差が少なかった。
+またプロットの傾きがどれも1程度であるから、$error \propto h$であることがわかる。
+
+4次のルンゲクッタ法においてメモリを節約する工夫がある。
+ソースコード\ref{code:1}が一般的なルンゲクッタ法の実装である。
+$dh$を刻み幅として、$x$を更新している。
+これをソースコード\ref{code:2}のようにすると、$k1,k2,k3,k4$の代わりに、$x$のコピー、$k$の２つで計算できるようになるので改善している。
+\begin{lstlisting}[caption=通常の4次のルンゲクッタ,label={code:1}]
+    while t < t_end:
+        k_one = dh * f(x, t)
+        k_two = dh * f(x + k_one / 2, t + dh / 2)
+        k_three = dh * f(x + k_two / 2, t + dh / 2)
+        k_four = dh * f(x + k_three, t + dh)
+        x = x + k_one / 6 + k_two / 3 + k_three / 3 + k_four / 6
+        t += dh
+
+\end{lstlisting}
+\begin{lstlisting}[caption=メモリを節約する4次のルンゲクッタ,label={code:2}]
+    while t < t_end:
+        x_cur = x
+        k = dh * f(x, t)
+        x += k / 6
+        k = dh * f(x_cur + k / 2, t + dh / 2)
+        x += k / 3
+        k = dh * f(x_cur + k / 2, t + dh / 2)
+        x += k / 3
+        k = dh * f(x_cur + k, t + dh)
+        x += k / 6
+        t += dh
+
+\end{lstlisting}
+
+\subsection{課題2}
+ケプラー運動をルンゲクッタ法を用いて解くことを考える。
+中心にある動かない質点の周りを回る質点の運動を考える。
+計算にルンゲクッタ法を用いると、シンプレクティックな計算法ではない、
+つまりステップの更新による座標変換が正準変換になっていないので
+エネルギーは保存しないことを確認する。
+設定は
+\begin{align}
+    \frac{dx}{dt} = u\\
+    \frac{dy}{dt} = v\\
+    \frac{du}{dt} = - \frac{x}{(x^2 + y^2)^{3/2}} = f(x, y)\label{eq:u}\\
+    \frac{dv}{dt} = - \frac{y}{(x^2 + y^2)^{3/2}}=g(x,y)\label{eq:v}\\
+\end{align}
+速度の微分に関する式\eqref{eq:u}、\eqref{eq:v}は中心力を意味する。
+初期条件は$x(0) = 3,y(0)=0,u(0)=0.3,v(0)=2$ととる。
+また、系の全エネルギーは
+\begin{equation}
+    E = \frac{1}{2} (u^2 + v^2) - \frac{1}{\sqrt{x^2 + y^2}}
+\end{equation}
+刻み幅を$h$として、時間発展の計算方法は以下のようになる。
+\begin{align}
+    k_{1x} &= h  \times u)\\
+    k_{1y} &= h  \times v\\
+    k_{1u} &= h  \times f(x, y)\\
+    k_{1v} &= h  \times g(x, y)\\
+    k_{2x} &= h  \times (u + k_{1u})\\
+    k_{2y} &= h  \times (v + k_{1v})\\
+    k_{2u} &= h  \times f(x + \frac{k_{1x}}{2}, y+ \frac{k_{1y}}{2})\\
+    k_{2v} &= h  \times g(x + \frac{k_{1x}}{2}, y+ \frac{k_{1y}}{2})\\
+    k_{3x} &= h  \times (u + k_{2u})\\
+    k_{3y} &= h  \times (v + k_{2v})\\
+    k_{3u} &= h  \times f(x + \frac{k_{2x}}{2}, y+ \frac{k_{2y}}{2})\\
+    k_{3v} &= h  \times g(x + \frac{k_{2x}}{2}, y+ \frac{k_{2y}}{2})\\
+    k_{4x} &= h  \times (u + k_{3u})\\
+    k_{4y} &= h  \times (v + k_{3v})\\
+    k_{4u} &= h  \times f(x + k_{3x}, y+ k_{1y})\\
+    k_{4v} &= h  \times g(x + k_{3x}, y+ k_{1y})\\
+    \tilde{x} &= x + \frac{k_{1x} + 2k_{2x} + 2k_{3x} + k_{4x}}{6}
+\end{align}
+$y,u,v$も同様に更新する。
+空間座標を表示すると図\ref{fig:kepler}のようになる。
+原点を中心に楕円を描いている。
+\begin{figure}[htbp]
+    \includegraphics[clip,width=15.0cm]{./kepler.png}
+    \caption{kepler運動}
+    \label{fig:kepler}
+\end{figure}
+エネルギーの変化は図\ref{fig:2}のようになる。刻み幅を小さくするほどエネルギーの損失は少なくなる。
+\begin{figure}[htbp]
+    \includegraphics[clip,width=15.0cm]{./energy.png}
+    \caption{エネルギーの変化}
+    \label{fig:2}
+\end{figure}
+また、大きな刻み幅についても計算し両軸に対数を取って表示した結果は図\ref{fig:3}のようになる。
+$0.01$の刻み幅を境にエネルギー誤差が大きくなりシミュレーションできていないことがわかる。
+%todo:1なぜ？
+\begin{figure}[htbp]
+    \includegraphics[clip,width=15.0cm]{./energy_log.png}
+    \caption{log(エネルギーの変化)}
+    \label{fig:3}
+\end{figure}
+
 \section{pde}
 \subsection{課題1}
 二階微分は５点差分公式を使うと

@@ -88,6 +88,7 @@ def plot_pos():
 def plot_energy():
     t_end = 1000
     dh_ls = [0.001, 0.005, 0.01, 0.05, 0.1]
+    dh_ls_two = [0.001, 0.005, 0.01]
     sns.set_theme()
     fig = plt.figure()
 
@@ -97,6 +98,18 @@ def plot_energy():
     plt.xlabel("log10(t)")
     plt.ylabel("log10(|E- E_0|)")
     plt.legend()
+    plt.tight_layout()
+    plt.savefig("energy_log.png")
+
+    fig = plt.figure()
+
+    for dh in dh_ls_two:
+        x_ls, y_ls, u_ls, v_ls, t_ls, energy_ls = execute(dh, t_end)
+        plt.plot(t_ls[1:], energy_ls[1:], label="dh={}".format(dh))
+    plt.xlabel("t")
+    plt.ylabel("|E- E_0|")
+    plt.legend()
+    plt.tight_layout()
     plt.savefig("energy.png")
 
 

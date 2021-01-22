@@ -5,6 +5,7 @@
 \usepackage{listings,jlisting}
 \usepackage{newtxtt}
 \usepackage{cases}
+\usepackage{here}
 \usepackage[utf8]{inputenc}
 \lstset{
   language=Python,      
@@ -158,15 +159,16 @@ $n-1 \times n-1$個の未知数、つまり各点での$u$、を求めるため�
 この方法によって、以前作成したSOR法を用いてといた結果が図\ref{fig:5}のようになる。
 %todo:厳密界との比較
 \begin{figure}[htbp]
-    \includegraphics[clip,width=10.0cm]{./init.png}
+    \includegraphics[clip,width=8.0cm]{./init.png}
     \caption{初期条件のみ表示した図}
     \label{fig:4}
 \end{figure}
-\begin{figure}[htbp]
-    \includegraphics[clip,width=10.0cm]{./pde.png}
+\begin{figure}[H]
+    \includegraphics[clip,width=8.0cm]{./pde.png}
     \caption{ラプラス方程式の解、y軸の目盛りは無視すること。原点は左下}
     \label{fig:5}
 \end{figure}
+
 \section{移流方程式}
 \subsection{課題1}
 移流方程式
@@ -182,6 +184,43 @@ $n-1 \times n-1$個の未知数、つまり各点での$u$、を求めるため�
     u(x, 0) = \sin^{100} (\pi x) 
 \end{equation}
 の下で解くことを考える。
+例えば中心差分法で差分化すれば、上付き添字を時刻、下付き添字を座標に関するインデックスとおいて、
+\begin{align}
+    \frac{u^{n+1}_j - u^{n}_j}{\Delta t} = c \frac{u^n_{j+1} - u^n_{j-1}}{2\Delta x}
+\end{align}
+と書ける。したがって、
+\begin{align}
+    u^{n+1}_j  =  u^{n}_j+ c \Delta t\frac{u^n_{j+1} - u^n_{j-1}}{2\Delta x}
+\end{align}
+と更新される。中心差分法をこのまま使うと、図\ref{fig:6}のように安定ではない。
+しかし、４段４位の古典ルンゲクッタ法を使えば安定に計算できて結果が、図\ref{fig:7}のようになる。
+風上差分法を用いれば、クーラン条件を満たしている限り計算は安定であり、図\ref{fig:8}のようになる。
+クーラン条件はフォン・ノイマンの安定性解析において更新される関数を
+フーリエ級数として表し、すべての波数においてスケールが発散しないことを要請した結果として現れる。
+風下差分法を使うと、計算が不安定になって壊れいる様子も得られた（図\ref{fig:9}）。
+\begin{figure}[htbp]
+    \includegraphics[clip,width=10.0cm]{./adv_center.png}
+    \caption{中心差分法,t=1での様子}
+    \label{fig:6}
+\end{figure}
+
+\begin{figure}[htbp]
+    \includegraphics[clip,width=10.0cm]{./adv_center_rk.png}
+    \caption{中心差分法RK}
+    \label{fig:7}
+\end{figure}
+
+\begin{figure}[htbp]
+    \includegraphics[clip,width=10.0cm]{./adv_upwind_rk.png}
+    \caption{風上差分法}
+    \label{fig:8}
+\end{figure}
+
+\begin{figure}[htbp]
+    \includegraphics[clip,width=10.0cm]{./adv_downwind_rk.png}
+    \caption{風下差分法}
+    \label{fig:9}
+\end{figure}
 \bibliographystyle{junsrt}
 \bibliography{cite}
 \end{document}

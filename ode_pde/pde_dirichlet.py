@@ -56,9 +56,10 @@ def main():
                         b[cur_index] += -1 * coef * u[x, y + i]
                     else:
                         a[cur_index, get_index(x, y + i, kGrid)] += coef
-    plt.imshow(u, interpolation="none")
+    fig = plt.figure()
+    sns.heatmap(np.rot90(u))
     plt.savefig("init.png")
-
+    fig = plt.figure()
     x = sor(a, b, 1.2)
     x = np.reshape(x, (kGrid - 1, kGrid - 1))
     u[1:kGrid, 1:kGrid] = x

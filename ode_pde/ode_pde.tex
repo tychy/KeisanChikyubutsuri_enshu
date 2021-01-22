@@ -30,16 +30,16 @@
 \title{}
 \begin{document}
 \maketitle
-\section{ode}
+\section{常微分方程式}
 \subsection{課題1}
 \begin{equation}
-    \frac{x}{t} = \frac{x + \sqrt{x^2 + t^2}}{t}
+    \frac{dx}{dt} = \frac{x + \sqrt{x^2 + t^2}}{t}
 \end{equation}\label{eq:1}
 \eqref{eq:1}の形の常微分方程式を解くことを考える。
 $t_0=1,x_0 = 0$を初期条件としてルンゲクッタ公式を用いて$t=1$まで計算する。
 
 \begin{figure}[htbp]
-    \includegraphics[clip,width=15.0cm]{./runge_kutta_error.png}
+    \includegraphics[clip,width=10.0cm]{./runge_kutta_error.png}
     \caption{RungeKutta法の誤差}
     \label{fig:1}
 \end{figure}
@@ -120,13 +120,13 @@ $y,u,v$も同様に更新する。
 空間座標を表示すると図\ref{fig:kepler}のようになる。
 原点を中心に楕円を描いている。
 \begin{figure}[htbp]
-    \includegraphics[clip,width=15.0cm]{./kepler.png}
+    \includegraphics[clip,width=10.0cm]{./kepler.png}
     \caption{kepler運動}
     \label{fig:kepler}
 \end{figure}
 エネルギーの変化は図\ref{fig:2}のようになる。刻み幅を小さくするほどエネルギーの損失は少なくなる。
 \begin{figure}[htbp]
-    \includegraphics[clip,width=15.0cm]{./energy.png}
+    \includegraphics[clip,width=10.0cm]{./energy.png}
     \caption{エネルギーの変化}
     \label{fig:2}
 \end{figure}
@@ -134,18 +134,54 @@ $y,u,v$も同様に更新する。
 $0.01$の刻み幅を境にエネルギー誤差が大きくなりシミュレーションできていないことがわかる。
 %todo:1なぜ？
 \begin{figure}[htbp]
-    \includegraphics[clip,width=15.0cm]{./energy_log.png}
+    \includegraphics[clip,width=10.0cm]{./energy_log.png}
     \caption{log(エネルギーの変化)}
     \label{fig:3}
 \end{figure}
 
-\section{pde}
+\section{偏微分方程式の境界問題}
 \subsection{課題1}
+二次元ラプラス方程式
+\begin{equation}
+    \frac{\partial^2u}{\partial x^2} +     \frac{\partial^2u}{\partial y^2} = 0
+\end{equation}
+を解くことを考える。一般に、境界での法線微分係数を与える(Neumann b.c.)か直接境界値を与える(Dirichlet b.c.)と内部の解は一意に定まる。
+ここではDirichlet b.c.の下で考える。
 二階微分は５点差分公式を使うと
 \begin{equation}
     f''(x_i) = \frac{-f_{i-2}+16f_{i-1}-30f_{i}+16f_{i+1}-f_{i+2}}{12h^2} + O(h^4)
 \end{equation}
-
+と差分化されるので、インデックスi,jで指定される二次元空間の各点において方程式を一つ得る。
+境界の値は与えられているので空間のグリッドを$n\times n$に切ると、
+$n-1 \times n-1$個の未知数、つまり各点での$u$、を求めるための$n-1 \times n-1$個の方程式を得る。
+したがって、この問題は連立方程式の解に帰着できる。
+この方法によって、以前作成したSOR法を用いてといた結果が図\ref{fig:5}のようになる。
+%todo:厳密界との比較
+\begin{figure}[htbp]
+    \includegraphics[clip,width=10.0cm]{./init.png}
+    \caption{初期条件のみ表示した図}
+    \label{fig:4}
+\end{figure}
+\begin{figure}[htbp]
+    \includegraphics[clip,width=10.0cm]{./pde.png}
+    \caption{ラプラス方程式の解、y軸の目盛りは無視すること。原点は左下}
+    \label{fig:5}
+\end{figure}
+\section{移流方程式}
+\subsection{課題1}
+移流方程式
+\begin{equation}
+    \frac{\partial u}{\partial t} + c\frac{\partial u}{\partial x} = 0
+\end{equation}
+を境界条件
+\begin{equation}
+    u(x+1, t) = u(x, t)
+\end{equation}
+と初期条件
+\begin{equation}
+    u(x, 0) = \sin^{100} (\pi x) 
+\end{equation}
+の下で解くことを考える。
 \bibliographystyle{junsrt}
 \bibliography{cite}
 \end{document}
